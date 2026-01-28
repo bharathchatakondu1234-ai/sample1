@@ -1,0 +1,38 @@
+name: Python Maven CI Build
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Checking out code
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. Install Python of latest
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x' # Always gets the latest 3 version
+
+      # 3. Build using Maven
+      - name: Build with Maven
+        run: mvn -B package
+
+      # 4. Create Staging Directory
+      - name: Create Staging Directory
+        run: mkdir staging
+
+      # 5. Copy Target File to Staging
+      # We copy the app file and the pom into the staging area
+      - name: Copy to Staging
+        run: |
+          cp app.py staging/
+          cp pom.xml staging/
+
+      # 6. Artifact Name as "package"
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: package  # This is your requested artifact name
+          path: staging/
